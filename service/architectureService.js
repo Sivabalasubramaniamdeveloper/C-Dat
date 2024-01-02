@@ -65,6 +65,7 @@ async function architecture(req, res, message) {
         exec("terraform apply -auto-approve -parallelism=10", (applyError, applyStdout, applyStderr) => {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
+                fs.unlinkSync(fileName)
                 return res.status(400).send("Terraform Architecture created failed");
             } else {
                 console.log(" Terraform Architecture created successfully ");
