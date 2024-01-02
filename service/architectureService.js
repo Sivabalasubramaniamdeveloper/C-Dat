@@ -46,7 +46,7 @@ async function architecture(req, res, message) {
         const configPath = `${path.directory}`;
         process.chdir(configPath);
 
-        
+
         let configData = [`${JSON.stringify(req.body)}`]
         const jsonData = JSON.parse(configData[0]);
         // console.log("config data is : ",configData);
@@ -80,39 +80,51 @@ async function architecture(req, res, message) {
 }
 
 function myFunction(value) {
-    let result;
-
-    switch (value) {
-        case 'Amazon Linux 2023 kernel-6.1':
-            result = "ami-02a2af70a66af6dfb";
-            break;
-        case 'Amazon Linux 2 Kernel-5.10':
-            result = "ami-0d92749d46e71c34c";
-            break;
-        case 'Ubuntu focal 20.04 LTS':
-            result = "ami-0a7cf821b91bcccbc";
-            break;
-        case 'Ubuntu jammy 22.04 LTS':
-            result = "ami-0287a05f0ef0e9d9a";
-            break;
-        case 'Windows server core base-2022':
-            result = "ami-08ac34653a1e1b4b9";
-            break;
-        case 'Windows server core base-2019':
-            result = "ami-0b33299742a1b79e0";
-            break;
-        case 'Windows server core base-2016':
-            result = "ami-06d692ce72530031b";
-            break;
-        case 'Windows with SQL server-2022 Standard':
-            result = "ami-0798b918496671569";
-            break;
-        case 'Red Had Enterprise Linux 9':
-            result = "ami-0645cf88151eb2007";
-            break;
-        default:
-            result = 'Value is not recognized';
+    let result = [];
+    let data;
+    for (let i = 0; i < value.length; i++) {
+        switch (value[i]) {
+            case 'Amazon Linux 2023 kernel-6.1':
+                data = "ami-02a2af70a66af6dfb";
+                result.push(data)
+                break;
+            case 'Amazon Linux 2 Kernel-5.10':
+                data = "ami-0d92749d46e71c34c";
+                result.push(data)
+                break;
+            case 'Ubuntu focal 20.04 LTS':
+                data = "ami-0a7cf821b91bcccbc";
+                result.push(data)
+                break;
+            case 'Ubuntu jammy 22.04 LTS':
+                data = "ami-0287a05f0ef0e9d9a";
+                result.push(data)
+                break;
+            case 'Windows server core base-2022':
+                data = "ami-08ac34653a1e1b4b9";
+                result.push(data)
+                break;
+            case 'Windows server core base-2019':
+                data = "ami-0b33299742a1b79e0";
+                result.push(data)
+                break;
+            case 'Windows server core base-2016':
+                data = "ami-06d692ce72530031b";
+                result.push(data)
+                break;
+            case 'Windows with SQL server-2022 Standard':
+                data = "ami-0798b918496671569";
+                result.push(data)
+                break;
+            case 'Red Had Enterprise Linux 9':
+                data = "ami-0645cf88151eb2007";
+                result.push(data)
+                break;
+            default:
+                data = 'Value is not recognized';
+        }
     }
+
 
     return result;
 }

@@ -24,34 +24,25 @@ async function userLogin(req, res, message) {
       const configPath = `${path.directory}`;
       process.chdir(configPath);
 
-      exec('terraform init', (error, initStdout, initStderr) => {
-        if (error) {
-          console.error('Terraform login initialization failed:', initStderr);
-          res.status(400).send("Terraform login initialization failed");
+      exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+        if (applyError) {
+          console.error('Terraform login failed:', applyStderr);
+          res.status(400).send("Terraform login failed");
         } else {
-          // console.log(3);
-          console.log('Terraform login initialization succeeded.');
-          exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
-            if (applyError) {
-              console.error('Terraform login failed:', applyStderr);
-              res.status(400).send("Terraform login failed");
-            } else {
-              console.log('Terraform login succeeded.');
-              respounce.createMessage(req, res, message)
-            }
-          });
+          console.log('Terraform login succeeded.');
+          respounce.createMessage(req, res, message)
         }
       });
     }
     //  Run Terraform commands
 
-  // }
-          else {
-    res.status(404).send("Invalid user name and password")
+    // }
+    else {
+      res.status(404).send("Invalid user name and password")
+    }
+  } catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
   }
-} catch (error) {
-  return res.status(400).json({ message: " something went wrong ", result: error.message })
-}
 }
 
 async function s3_bucket_creation(req, res) {
