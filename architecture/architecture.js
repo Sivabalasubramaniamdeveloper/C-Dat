@@ -130,12 +130,8 @@ async function createInternetGateWay(req, res) {
   let vpcTagName = req.body.vpc.vpcTagName
   let internetGateWayTagName = req.body.internetGateWay.internetGateWayTagName
   let internetGatewayDetail = []
-<<<<<<< HEAD
-  if (internetGateWayName.length == 0) {
-=======
 
   if (internetGateWayTagName.length == 0) {
->>>>>>> main
     return res.status(400).json({ message: "internet gate way name is required" })
   }
 
@@ -156,11 +152,7 @@ async function createInternetGateWay(req, res) {
       resource "aws_internet_gateway" "${internetGateWayTagName[i]}" {
           vpc_id = aws_vpc.${vpcTagName[i]}.id
           tags = {
-<<<<<<< HEAD
-            Name = "${internetGateWayName[i]}-internet-gateway"
-=======
             Name = "${internetGateWayTagName[i]}"
->>>>>>> main
           }
         }
       `
