@@ -123,6 +123,16 @@ async function create_sns_topic(req, res) {
   }
 }
 
+async function send_email(req,res){
+  try {
+    let mail_send=message.mailSend
+    const mailsend = await messsageService.mailSend(req,res,mail_send)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
 //API for code push to codeCommit
 async function push_code(req, res) {
   try {
@@ -180,6 +190,6 @@ async function rosa(req, res) {
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer
+  load_balancer, send_email
   // jenkin,
 };

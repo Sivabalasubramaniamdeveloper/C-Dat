@@ -4,44 +4,47 @@ const path = require('../path');
 const simpleGit = require('simple-git');
 const respounce = require('../responce/responce')
 
-async function createSnsTopic(req,res, message){
-    try {
-        const tfConfig = `
-        resource "aws_sns_topic" "${req.body.topic_name}" {
-          name =  "${req.body.topic_name}"
-          display_name = "${req.body.display_name}"
-          tags = {
-            Name = "${req.body.topic_name}"
-          }
+async function createSnsTopic(req, res, message) {
+  try {
+    const tfConfig = `
+      resource "aws_sns_topic" "${req.body.topic_name}" {
+        name         = "${req.body.topic_name}"
+        display_name = "${req.body.display_name}"
+        tags = {
+          Name = "${req.body.topic_name}"
         }
-        
-        resource "aws_sns_topic_subscription" "${req.body.subscription_name}" {
-          topic_arn = aws_sns_topic.${req.body.topic_name}.arn
-          protocol = "${req.body.protocol}"
-          endpoint = "${req.body.endpoint}"
-        }`;
-  
-        // Write the Terraform configuration to a file
-        fs.writeFileSync(`${path.directory}/sns_topic.tf`, tfConfig);
-        const configPath = `${path.directory}`;
-        process.chdir(configPath);
-  
-        //  Run Terraform commands
-            exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
-              if (applyError) {
-                console.log('SNS topic created failed:', applyStderr);
-                return res.status(400).json({message: "SNS topic created failed"});
-              } else {
-                console.log('Terraform apply succeeded.');
-                respounce.createMessage(req, res, message)
-              }
-            });
-    } catch (error) {
-      return res.status(400).json({ message: "something went wrong ", result: error.message }); 
-    }
+      }
+      
+      resource "aws_sns_topic_subscription" "${req.body.subscription_name}" {
+        topic_arn = aws_sns_topic.${req.body.topic_name}.arn
+        protocol  = "${req.body.protocol}"
+        endpoint  = "${req.body.endpoint}"
+      }
+      
+     
+      `;
+
+    // Write the Terraform configuration to a file
+    fs.writeFileSync(`${path.directory}/sns_topic.tf`, tfConfig);
+    const configPath = `${path.directory}`;
+    process.chdir(configPath);
+
+    // Run Terraform commands
+    exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+      if (applyError) {
+        console.log('SNS topic creation failed:', applyStderr);
+        return res.status(400).json({ message: "SNS topic creation failed" });
+      } else {
+        console.log('Terraform apply succeeded.');
+        respounce.createMessage(req, res, message);
+      }
+    });
+  } catch (error) {
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
 }
 
-async function queueCreate(req, res, message){
+async function queueCreate(req, res, message) {
   try {
     const tfConfig = `
     resource "aws_sqs_queue" "${req.body.queue_name}" {
@@ -60,19 +63,59 @@ async function queueCreate(req, res, message){
 
     //  Run Terraform commands
 
-        exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
-          if (applyError) {
-            console.error('Terraform apply failed:', applyStderr);
-            res.status(400).send("Terraform apply failed");
-          } else {
-            console.log('Terraform apply succeeded.');
-            respounce.createMessage(req, res, message)
-          }
-        });
+    exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+      if (applyError) {
+        console.error('Terraform apply failed:', applyStderr);
+        res.status(400).send("Terraform apply failed");
+      } else {
+        console.log('Terraform apply succeeded.');
+        respounce.createMessage(req, res, message)
+      }
+    });
 
   } catch (error) {
-    return res.status(400).json({ message: "something went wrong ", result: error.message }); 
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
   }
 }
 
-module.exports = { createSnsTopic, queueCreate }
+async function mailSend(req, res, message) {
+  try {
+    const tfConfig = `
+    resource "aws_sns_topic" "${req.body.topic_name}" {
+      name         = "${req.body.topic_name}"
+      display_name = "${req.body.display_name}"
+      tags = {
+        Name = "${req.body.topic_name}"
+      }
+    }
+    
+    resource "aws_sns_topic_subscription" "${req.body.subscription_name}" {
+      topic_arn = aws_sns_topic.${req.body.topic_name}.arn
+      protocol  = "${req.body.protocol}"
+      endpoint  = "${req.body.endpoint}" 
+    }
+    resource "null_resource" "send_message" {
+      depends_on = [aws_sns_topic_subscription.${req.body.subscription_name}]
+    }
+    `;
+
+    // Write the Terraform configuration to a file
+    fs.writeFileSync(`${path.directory}/sns_topic_subscription.tf`, tfConfig);
+    const configPath = `${path.directory}`;
+    process.chdir(configPath);
+
+    exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+      if (applyError) {
+        console.error('Terraform apply failed:', applyStderr);
+        res.status(400).send("Terraform apply failed");
+      } else {
+        console.log('Terraform apply succeeded.', applyStderr);
+        respounce.createMessage(req, res, message);
+      }
+    });
+  } catch (error) {
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
+module.exports = { createSnsTopic, queueCreate, mailSend }

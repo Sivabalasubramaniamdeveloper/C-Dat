@@ -128,19 +128,24 @@ async function createSubnet(req, res) {
 async function createInternetGateWay(req, res) {
   let vpcId = req.body.internetGateWay.vpcId
   let vpcTagName = req.body.vpc.vpcTagName
-  let internetGateWayName = req.body.internetGateWay.internetGateWayName
+  let internetGateWayTagName = req.body.internetGateWay.internetGateWayTagName
   let internetGatewayDetail = []
+<<<<<<< HEAD
   if (internetGateWayName.length == 0) {
+=======
+
+  if (internetGateWayTagName.length == 0) {
+>>>>>>> main
     return res.status(400).json({ message: "internet gate way name is required" })
   }
 
-  for (let i = 0; i < internetGateWayName.length; i++) {
+  for (let i = 0; i < internetGateWayTagName.length; i++) {
     if (vpcId.length > 0) {
       let internetGateWay = `
-          resource "aws_internet_gateway" "${internetGateWayName[i]}" {
+          resource "aws_internet_gateway" "${internetGateWayTagName[i]}" {
               vpc_id = "${vpcId[i]}"
               tags = {
-                Name = "${internetGateWayName[i]}"
+                Name = "${internetGateWayTagName[i]}"
               }
             }
           `
@@ -148,10 +153,14 @@ async function createInternetGateWay(req, res) {
       internetGatewayDetail += internetGateWay;
     } else if (vpcTagName.length > 0) {
       let internetGateWay = `
-      resource "aws_internet_gateway" "${internetGateWayName[i]}" {
+      resource "aws_internet_gateway" "${internetGateWayTagName[i]}" {
           vpc_id = aws_vpc.${vpcTagName[i]}.id
           tags = {
+<<<<<<< HEAD
             Name = "${internetGateWayName[i]}-internet-gateway"
+=======
+            Name = "${internetGateWayTagName[i]}"
+>>>>>>> main
           }
         }
       `
@@ -173,7 +182,7 @@ async function createRouteTable(req, res) {
   let cidr = req.body.routeTable.cidr
   let internetGateWayId = req.body.routeTable.internetGateWayId
   let internetGateWayTittle = req.body.internetGateWay.internetGateWayTittle
-  let internetGateWayName = req.body.internetGateWay.internetGatewayName
+  let internetGateWayTagName = req.body.internetGateWay.internetGateWayTagName
   let private = req.body.routeTable.privateRouteTable
   let routeTableDetail = []
     // console.log("private : ",private);
@@ -223,7 +232,7 @@ async function createRouteTable(req, res) {
                       vpc_id = "${vpcId[i]}"
                       route {
                           cidr_block = "${cidr[i]}"
-                          gateway_id = aws_internet_gateway.${internetGateWayName[i]}.id
+                          gateway_id = aws_internet_gateway.${internetGateWayTagName[i]}.id
                         }
                       tags = {
                         Name = "${routeTableTagName[i]}"
@@ -247,13 +256,13 @@ async function createRouteTable(req, res) {
           routeTableDetail += routeTable;
         }
       } else if (vpcTagName) {
-        if (internetGateWayName) {
+        if (internetGateWayTagName) {
           let routeTable = `
                   resource "aws_route_table" "${routeTableTagName[i]}" {
                       vpc_id = aws_vpc.${vpcTagName[i]}.id
                       route {
                           cidr_block = "${cidr[i]}"
-                          gateway_id = aws_internet_gateway.${internetGateWayName[i]}.id
+                          gateway_id = aws_internet_gateway.${internetGateWayTagName[i]}.id
                         }
                       tags = {
                         Name = "${routeTableTagName[i]}"
@@ -465,26 +474,78 @@ async function createSecurityGroup(req, res) {
   }
 }
 
+function myFunction(value) {
+  let result = [];
+  console.log("value is : ",value);
+  let data;
+  for (let i = 0; i < value.length; i++) {
+      switch (value[i]) {
+          case 'Amazon Linux 2023 kernel-6.1':
+              data = "ami-02a2af70a66af6dfb";
+              result.push(data)
+              break;
+          case 'Amazon Linux 2 Kernel-5.10':
+              data = "ami-0d92749d46e71c34c";
+              result.push(data)
+              break;
+          case 'Ubuntu focal 20.04 LTS':
+              data = "ami-0a7cf821b91bcccbc";
+              result.push(data)
+              break;
+          case 'Ubuntu jammy 22.04 LTS':
+              data = "ami-0287a05f0ef0e9d9a";
+              result.push(data)
+              break;
+          case 'Windows server core base-2022':
+              data = "ami-08ac34653a1e1b4b9";
+              result.push(data)
+              break;
+          case 'Windows server core base-2019':
+              data = "ami-0b33299742a1b79e0";
+              result.push(data)
+              break;
+          case 'Windows server core base-2016':
+              data = "ami-06d692ce72530031b";
+              result.push(data)
+              break;
+          case 'Windows with SQL server-2022 Standard':
+              data = "ami-0798b918496671569";
+              result.push(data)
+              break;
+          case 'Red Had Enterprise Linux 9':
+              data = "ami-0645cf88151eb2007";
+              result.push(data)
+              break;
+          default:
+              data = 'Value is not recognized';
+      }
+  }
+
+
+  return result;
+}
+
 async function createEc2Instance(req, res) {
   try {
-    let subnetId = req.body.subnetId
+    console.log("createeeeee",req.body);
+    let subnetId = req.body.ec2Instance.subnetId
     let subnetTittle = req.body.subnet.subnetTittle
-    let subnetTagName = req.body.subnetTagName
-    let publicIP = req.body.publicIP
-    let ami = createAmi.myFunction(req.body.ami)
-    let instanceTagName = req.body.instanceTagName
+    let subnetTagName = req.body.subnet.subnetTagName
+    let publicIP = req.body.ec2Instance.publicIP
+    let ami = myFunction(req.body.ec2Instance.ami)
+    let instanceTagName = req.body.ec2Instance.ec2InstanceTagName
     let securityGroupTittle = req.body.securityGroup.securityGroupTittle
-    let securityGroupTagName = req.body.securityGroupTagName
-    let securityGroupId = req.body.securityGroupId
+    let securityGroupTagName = req.body.securityGroup.securityGroupTagName
+    let securityGroupId = req.body.ec2Instance.securityGroupId
     let instanceDetail = []
-
     if (instanceTagName.length == 0) {
       return res.status(400).json({ message: "instance name is required" })
     }
-    let instanceType = req.body.instanceType
+    let instanceType = req.body.ec2Instance.instanceType
     if (instanceType.length == 0) {
       return res.status(400).json({ message: "instance type is required" })
     }
+    console.log("detailsssss",instanceDetail)
     // let keyName = req.body.keyName
     // if (keyName.length == 0) {
     //   return res.status(400).json({ message: "key name is required" })
@@ -505,7 +566,7 @@ async function createEc2Instance(req, res) {
           resource "aws_instance" "${instanceTagName[i]}"{
               ami = "${ami[i]}"
               instance_type = "${instanceType[i]}"
-              associate_public_ip_address = ${publicIP[i]}
+              associate_public_ip_address = "${publicIP[i]}"
               subnet_id = "${subnetId[i]}"
               vpc_security_group_ids = ["${securityGroupId[i]}"]
               tags = {
@@ -530,8 +591,7 @@ async function createEc2Instance(req, res) {
 
       } else if (subnetTittle) {
         if (securityGroupId) {
-          let instance = `
-          resource "aws_instance" "${instanceTagName[i]}"{
+          let instance = `resource "aws_instance" "${instanceTagName[i]}" {
               ami = "${ami[i]}"
               instance_type = "${instanceType[i]}"
               associate_public_ip_address = ${publicIP[i]}
@@ -558,7 +618,7 @@ async function createEc2Instance(req, res) {
         }
       }
     }
-
+    // console.log("instanceDetail : ",instanceDetail);
     return instanceDetail;
   } catch (error) {
     return res.status(400).json({ message: "something went wrong", result: error.message })
@@ -617,6 +677,8 @@ async function loadbancer(req, res) {
     return response.status(500).json({ message: "something went wrong", result: error.message })
   }
 }
+
+
 
 
 
