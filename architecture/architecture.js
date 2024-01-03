@@ -127,10 +127,9 @@ async function createSubnet(req, res) {
 
 async function createInternetGateWay(req, res) {
   let vpcId = req.body.internetGateWay.vpcId
-  let vpcTagName = req.body.internetGateWay.vpcTagName
-  let internetGateWayName = req.body.internetGateWay.internetGatewayName
+  let vpcTagName = req.body.vpc.vpcTagName
+  let internetGateWayName = req.body.internetGateWay.internetGateWayName
   let internetGatewayDetail = []
-
   if (internetGateWayName.length == 0) {
     return res.status(400).json({ message: "internet gate way name is required" })
   }
@@ -151,13 +150,14 @@ async function createInternetGateWay(req, res) {
       resource "aws_internet_gateway" "${internetGateWayName[i]}" {
           vpc_id = aws_vpc.${vpcTagName[i]}.id
           tags = {
-            Name = "${internetGateWayName[i]}"
+            Name = "${internetGateWayName[i]}-internet-gateway"
           }
         }
       `
       internetGatewayDetail += internetGateWay;
+      console.log("internetGatewayDetail : ",internetGatewayDetail);
     } else {
-      return req.status(400).json({ message: "vpc id is required" })
+      return res.status(400).json({ message: "vpc id is required" })
     }
 
   }
