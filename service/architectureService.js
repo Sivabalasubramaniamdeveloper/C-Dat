@@ -49,7 +49,7 @@ async function architecture(req, res, message) {
         
         let configData = [`${JSON.stringify(req.body)}`]
         const jsonData = JSON.parse(configData[0]);
-        // console.log("config data is : ",configData);
+        console.log("config data is : ",configData);
         let serviceDetail = [];
         for (const category in jsonData) {
             const title = jsonData[category][`${category}Tittle`];
@@ -66,7 +66,7 @@ async function architecture(req, res, message) {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
                 fs.unlinkSync(fileName)
-                return res.status(400).send("Terraform Architecture created failed");
+                // return res.status(400).send("Terraform Architecture created failed");
             } else {
                 console.log(" Terraform Architecture created successfully ");
                 fs.unlinkSync(fileName)

@@ -58,6 +58,7 @@ async function os_list(req, res) {
   try {
     let os_list_message = message.getOs
     const osList = await getService.osListGet(req, res, os_list_message)
+    return res.status(200).json({message: "OS list get successfully", result: osList})
   } catch (error) {
     console.log("error is: ", error);
     return res.status(400).json({ message: " something went wrong ", result: error.message })
