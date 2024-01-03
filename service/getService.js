@@ -35,16 +35,7 @@ async function vpcListGet(req, res, message) {
                         const matchArray = applyStdout.match(vpcIdRegex);
                         const vpcIds = matchArray.map(match => match.replace(/"/g, ''));
                         function findDuplicates(array) {
-                            let duplicateIds = [];
-                            let seen = {};
-
-                            for (let id of array) {
-                                if (seen.hasOwnProperty(id)) {
-                                    duplicateIds.push(id);
-                                } else {
-                                    seen[id] = true;
-                                }
-                            }
+                            let duplicateIds = [...new Set(array)]
 
                             return duplicateIds;
                         }

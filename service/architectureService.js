@@ -46,7 +46,7 @@ async function architecture(req, res, message) {
         const configPath = `${path.directory}`;
         process.chdir(configPath);
 
-
+        
         let configData = [`${JSON.stringify(req.body)}`]
         const jsonData = JSON.parse(configData[0]);
         // console.log("config data is : ",configData);

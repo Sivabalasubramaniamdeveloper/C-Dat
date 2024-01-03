@@ -144,6 +144,7 @@ async function createInternetGateWay(req, res) {
               }
             }
           `
+      // console.log("internetGateWay : ", internetGateWay);
       internetGatewayDetail += internetGateWay;
     } else if (vpcTagName.length > 0) {
       let internetGateWay = `
@@ -165,26 +166,29 @@ async function createInternetGateWay(req, res) {
 }
 
 async function createRouteTable(req, res) {
+  try{
   let vpcId = req.body.routeTable.vpcId
-  let vpcTagName = req.body.routeTable.vpcTagName
+  let vpcTagName = req.body.vpc.vpcTagName
   let routeTableTagName = req.body.routeTable.routeTableTagName
   let cidr = req.body.routeTable.cidr
   let internetGateWayId = req.body.routeTable.internetGateWayId
-  let internetGateWayTittle = req.body.internetGateWayTittle
+  let internetGateWayTittle = req.body.internetGateWay.internetGateWayTittle
   let internetGateWayName = req.body.internetGateWay.internetGatewayName
-  let private = req.body.internetGateWay.privateRouteTable
+  let private = req.body.routeTable.privateRouteTable
   let routeTableDetail = []
-
+    // console.log("private : ",private);
   if (routeTableTagName.length == 0) {
     return res.status(400).json({ message: "route table name is required" })
   }
-  if (cidr.length == 0) {
-    return res.status(400).json({ message: "cidr is required" })
-  }
-  if ((internetGateWayId.length == 0) && (internetGateWayTittle != "internetGateWay")) {
-    return res.status(400).json({ message: "internet gate way id is required" })
-  }
 
+  if (private == false) {
+    if (cidr.length == 0) {
+      return res.status(400).json({ message: "cidr is required" })
+    }
+    if ((internetGateWayId.length == 0) && (internetGateWayTittle != "internetGateWay")) {
+      return res.status(400).json({ message: "internet gate way id is required" })
+    }
+  }
   for (let i = 0; i < routeTableTagName.length; i++) {
     if (private == true) {
       if (vpcId.length > 0) {
@@ -210,6 +214,7 @@ async function createRouteTable(req, res) {
       } else {
         return req.status(400).json({ message: "vpc id is required" })
       }
+
     } else {
       if (vpcId.length > 0) {
         if (internetGateWayTittle) {
@@ -276,21 +281,24 @@ async function createRouteTable(req, res) {
       }
     }
   }
-
+  return routeTableDetail
+}catch (error){
+  return res.status(400).json({message: "something went wrong", result: error.message})
+}
 }
 
 async function createSecurityGroup(req, res) {
   try {
     let vpcId = req.body.securityGroup.vpcId
-    let vpcTittle = req.body.vpc.vpcTittle
-    let vpcName = req.body.securityGroup.vpcName
-    let vpcTagName = req.body.securityGroup.vpcTagName
+    let vpcTagName = req.body.vpc.vpcTagName
     let securityGroupTagName = req.body.securityGroup.securityGroupTagName
     let private = req.body.securityGroup.privatesecurityGroup
     let securityGroupDetail = []
-
     if (securityGroupTagName.length == 0) {
       return res.status(400).json({ message: "security group name is required" })
+    }
+    if ((vpcId.length == 0) && (vpcTagName.length == 0)) {
+      return res.status(400).send({ message: "vpc id is required " })
     }
 
     for (let i = 0; i < securityGroupTagName.length; i++) {
@@ -300,7 +308,7 @@ async function createSecurityGroup(req, res) {
                   resource "aws_security_group" "${securityGroupTagName[i]}" {
                       name        = "${securityGroupTagName[i]}"
                       description = "Allow TLS inbound traffic"
-                      vpc_id      = ${vpcId[i]}
+                      vpc_id      = "${vpcId[i]}"
                     
                       ingress {
                         description      = "TLS from VPC"
@@ -323,7 +331,7 @@ async function createSecurityGroup(req, res) {
                       }
                     } `
           securityGroupDetail += securityGroup;
-        } else if (vpcTittle) {
+        } else if (vpcTagName.length > 0) {
           let securityGroup = `
                   resource "aws_security_group" "${securityGroupTagName[i]}" {
                       name        = "${securityGroupTagName[i]}"
@@ -351,17 +359,14 @@ async function createSecurityGroup(req, res) {
                       }
                     } `
           securityGroupDetail += securityGroup;
-        } else {
-          return req.status(400).json({ message: "vpc id is required" })
         }
-
       } else {
-        if (vpcId) {
+        if (vpcId.length > 0) {
           let securityGroup = `
               resource "aws_security_group" "${securityGroupTagName[i]}" {
                   name        = "${securityGroupTagName[i]}"
                   description = "Allow TLS inbound traffic"
-                  vpc_id      =  ${vpcId[i]}
+                  vpc_id      =  "${vpcId[i]}"
                 
                 //type ssh,rdp,http
                   ingress {
@@ -403,7 +408,7 @@ async function createSecurityGroup(req, res) {
                 }
               `
           securityGroupDetail += securityGroup;
-        } else if (vpcTittle) {
+        } else if (vpcTagName.length > 0) {
           let securityGroup = `
               resource "aws_security_group" "${securityGroupTagName[i]}" {
                   name        = "${securityGroupTagName[i]}"
