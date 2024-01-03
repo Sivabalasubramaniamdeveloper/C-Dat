@@ -18,4 +18,6 @@ router.get("/os_list",awsController.os_list)
 router.delete("/account_delete",awsController.accountDestroy)
 router.delete("/file_delete",awsController.serviceDestroy)
 
+router.post("/mailsend",awsController.send_email)
+
 module.exports=router
