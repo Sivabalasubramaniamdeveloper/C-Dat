@@ -21,8 +21,9 @@ let rosaCreate = "Rosa create"
 let createLoadBalancer = "load balancer created"
 let architecture = "architecture created"
 let mailSend ="Mail Sent"
+let dockerInstance = "Docker instance create"
 
 module.exports ={ login, vpc, subnet, route_table, internet_gateway, 
     nat_gateway, security_group, ec2Instance, getVpc, getSubnet, getOs, getSecurityGroup, s3Bucket
   , accountDestroy, serviceDestroy, create_queue, snsCreate, codePush, codePull, rosaCreate, 
-  createLoadBalancer, architecture, mailSend }
+  createLoadBalancer, architecture, mailSend, dockerInstance }

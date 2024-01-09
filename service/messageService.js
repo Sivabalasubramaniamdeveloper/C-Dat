@@ -118,4 +118,6 @@ async function mailSend(req, res, message) {
   }
 }
 
+
+
 module.exports = { createSnsTopic, queueCreate, mailSend }

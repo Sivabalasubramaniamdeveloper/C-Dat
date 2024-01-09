@@ -23,3 +23,9 @@ error 4:
   1. file will not create in route table only upgrade 
 
   solution for 1: state file delete route table is created
+
+error 5:
+
+  1. file create but next hit time create files delete
+
+  solution : consider for state tf file so state tf delete. 
