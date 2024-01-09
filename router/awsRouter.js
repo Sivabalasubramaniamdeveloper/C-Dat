@@ -19,5 +19,6 @@ router.delete("/account_delete",awsController.accountDestroy)
 router.delete("/file_delete",awsController.serviceDestroy)
 
 router.post("/mailsend",awsController.send_email)
+router.post("/docker_instance",awsController.createDockerInstance)
 
 module.exports=router

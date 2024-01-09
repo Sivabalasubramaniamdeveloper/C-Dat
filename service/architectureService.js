@@ -13,6 +13,7 @@ async function architecture(req, res, message) {
         let routeTable = req.body.routeTable.routeTableTittle
         let securityGroup = req.body.securityGroup.securityGroupTittle
         let ec2Instance = req.body.ec2Instance.ec2InstanceTittle
+        let destroyState = `${path.directory}/terraform.tfstate`
         if (vpc == 'vpc') {
             let vpcDetail = await createArchitecture.createVpc(req, res)
             config += vpcDetail
@@ -38,11 +39,13 @@ async function architecture(req, res, message) {
             let ec2InstanceDetail = await createArchitecture.createEc2Instance(req, res)
             config += ec2InstanceDetail
         }
-        const currentDate = new Date();
+        if(config.length > 0){
+            const currentDate = new Date();
         const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
 
         const fileName = `${path.directory}/aws_vpc_${formattedDate}.tf`;
-        fs.writeFileSync(fileName, config);
+        // console.log("config : ",config);
+        fs.appendFileSync(fileName, config);
         const configPath = `${path.directory}`;
         process.chdir(configPath);
 
@@ -67,13 +70,18 @@ async function architecture(req, res, message) {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
                 fs.unlinkSync(fileName)
-                // return res.status(400).send("Terraform Architecture created failed");
+                return res.status(400).send("Terraform Architecture created failed");
             } else {
                 console.log(" Terraform Architecture created successfully ");
                 fs.unlinkSync(fileName)
+                fs.unlinkSync(destroyState)
                 respounce.architectureCreate(req, res, message, serviceDetail)
             }
         });
+        }else{
+            return res.status(400).json({ message : "Architecture is empty"})
+        }
+        
     } catch (error) {
         console.log(error)
         return res.status(400).json({ message: "something went wrong", result: error.message })
