@@ -57,8 +57,8 @@ async function messageSend(req, res, data) {
               
             provisioner "local-exec" {
               command = <<EOF
-                aws sns publish --topic-arn "${aws_sns_topic.example.arn}" --message "welcome, theena and C-Dat Team! create ${data}"
-              EOF
+              aws sns publish --topic-arn "${aws_sns_topic.example.arn}" --message "welcome, theena and C-Dat Team! create ${data}"             
+               EOF
             }
           }
         `

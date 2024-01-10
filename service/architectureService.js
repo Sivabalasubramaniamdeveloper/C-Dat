@@ -65,7 +65,7 @@ async function architecture(req, res, message) {
                 serviceDetail.push(perticulerService)
             }
         }
-        // console.log("valide : ",valide);
+        // console.log("valide : ",config);
         exec("terraform apply -auto-approve -parallelism=10", (applyError, applyStdout, applyStderr) => {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
