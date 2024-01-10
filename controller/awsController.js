@@ -55,6 +55,16 @@ async function security_group_list(req, res) {
   }
 };
 
+async function internet_gate_way_list(req, res) {
+  try {
+    let subnet_list_message = message.getSecurityGroup
+    const subnetList = await getService.internetGateWayList(req, res, subnet_list_message)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+};
+
 
 async function os_list(req, res) {
   try {
@@ -202,6 +212,6 @@ async function rosa(req, res) {
 module.exports = {
   aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
   serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance
+  load_balancer, send_email, createDockerInstance, internet_gate_way_list
   // jenkin,
 };

@@ -272,10 +272,55 @@ async function architectureSecurityGroup(req, res, message){
     }
 }
 
+async function internetGateWayList(req, res, message) {
+    try {
+        const tfConfig = `data "aws_instances" "ins" {
+        }
+        
+        output "ins" {
+          value = data.aws_instances.ins.ids
+        }`;
 
+        // Write the Terraform configuration to a file
+        fs.writeFileSync(`${path.directory}/instance_list.tf`, tfConfig);
+
+
+        // Define the relative path to the Terraform configuration directory
+        const configPath = `${path.directory}`;
+
+        // Change the current working directory to the Terraform configuration directory
+        process.chdir(configPath);
+
+        exec('terraform apply -auto-approve', (applyError, applyStdout, applyStderr) => {
+            if (applyError) {
+                console.error('Terraform apply failed:', applyStderr);
+                res.send("Terraform apply failed");
+            } else {
+                console.log('Terraform apply succeeded.');
+                console.log(applyStdout);
+                const subnetIdRegex = /"subnet-\w+"/g;
+                const matchArray = applyStdout.match(subnetIdRegex);
+                const instanceIds = matchArray.map(match => match.replace(/"/g, ''));
+                function findDuplicates(array) {
+                    let duplicateIds = [...new Set(array)]
+
+                    return duplicateIds;
+                }
+                let duplicateIds = findDuplicates(instanceIds);
+                if(duplicateIds.length > 0){
+                    respounce.createMessage(req, res, message, duplicateIds)
+                }else{
+                    respounce.createMessage(req, res, message, instanceIds)
+                }
+            }
+        });
+    } catch (error) {
+        return res.status(400).json({ message: "something went wrong ", result: error.message });
+    }
+}
 
 
 module.exports = {
-    vpcListGet, securityGroupListGet,
+    vpcListGet, securityGroupListGet, internetGateWayList,
     subnetGetList, osListGet, instanceGetList, architectureSecurityGroup
 };
