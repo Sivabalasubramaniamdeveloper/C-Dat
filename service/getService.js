@@ -213,7 +213,9 @@ async function instanceGetList(req, res, message) {
 
 async function architectureSecurityGroup(req, res, message){
     try {
-        let subnetId = req.body.ec2Instance.subnetId[0]
+        console.log("123456");
+        let subnetId = req.query.subnetId
+        console.log("subnetId :",subnetId);
         let tfConfig = `
         data "aws_subnet" "example" {
                id = "${subnetId}"  # replace with your subnet ID

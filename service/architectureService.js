@@ -70,7 +70,7 @@ async function architecture(req, res, message) {
             if (applyError) {
                 console.error("Terraform Architecture created failed:", applyStderr);
                 fs.unlinkSync(fileName)
-                return res.status(400).send("Terraform Architecture created failed");
+                return res.status(400).send("Terraform Architecture created failed",applyStderr);
             } else {
                 console.log(" Terraform Architecture created successfully ");
                 fs.unlinkSync(fileName)

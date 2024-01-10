@@ -466,64 +466,54 @@ async function createSecurityGroup(req, res) {
 
 function myFunction(value) {
   let result = [];
-  console.log("value is : ",value);
+  
   let data;
   for (let i = 0; i < value.length; i++) {
       switch (value[i]) {
           case 'Amazon Linux 2023 kernel-6.1':
               data = "ami-02a2af70a66af6dfb";
-              result.push(data)
               break;
           case 'Amazon Linux 2 Kernel-5.10':
               data = "ami-0d92749d46e71c34c";
-              result.push(data)
               break;
           case 'Ubuntu focal 20.04 LTS':
               data = "ami-0a7cf821b91bcccbc";
-              result.push(data)
               break;
           case 'Ubuntu jammy 22.04 LTS':
               data = "ami-0287a05f0ef0e9d9a";
-              result.push(data)
               break;
           case 'Windows server core base-2022':
               data = "ami-08ac34653a1e1b4b9";
-              result.push(data)
               break;
           case 'Windows server core base-2019':
               data = "ami-0b33299742a1b79e0";
-              result.push(data)
               break;
           case 'Windows server core base-2016':
               data = "ami-06d692ce72530031b";
-              result.push(data)
               break;
           case 'Windows with SQL server-2022 Standard':
               data = "ami-0798b918496671569";
-              result.push(data)
               break;
           case 'Red Had Enterprise Linux 9':
               data = "ami-0645cf88151eb2007";
-              result.push(data)
               break;
           default:
               data = 'Value is not recognized';
       }
   }
 
-
-  return result;
+  return data;
 }
 
 async function createEc2Instance(req, res) {
-  try {
+  // try {
     console.log("createeeeee",req.body);
     let subnetId = req.body.ec2Instance.subnetId
     let subnetTittle = req.body.subnet.subnetTittle
     let subnetTagName = req.body.subnet.subnetTagName
     let publicIP = req.body.ec2Instance.publicIP
     let ami = myFunction(req.body.ec2Instance.ami)
-    let instanceTagName = req.body.ec2Instance.ec2InstanceTagName
+    let instanceTagName = req.body.ec2Instance.instanceTagName
     let securityGroupTittle = req.body.securityGroup.securityGroupTittle
     let securityGroupTagName = req.body.securityGroup.securityGroupTagName
     let securityGroupId = req.body.ec2Instance.securityGroupId
@@ -545,18 +535,13 @@ async function createEc2Instance(req, res) {
     }
 
     for (let i = 0; i < instanceTagName.length; i++) {
-      if (publicIP[i] == 'false') {
-        publicIP[i] == false
-      } else {
-        publicIP[i] == true
-      }
       if (subnetId.length > 0) {
         if (securityGroupId) {
           let instance = `
           resource "aws_instance" "${instanceTagName[i]}"{
               ami = "${ami[i]}"
               instance_type = "${instanceType[i]}"
-              associate_public_ip_address = "${publicIP[i]}"
+              associate_public_ip_address = "${publicIP}"
               subnet_id = "${subnetId[i]}"
               vpc_security_group_ids = ["${securityGroupId[i]}"]
               tags = {
@@ -569,7 +554,7 @@ async function createEc2Instance(req, res) {
                   resource "aws_instance" "${instanceTagName[i]}"{
                       ami = "${ami[i]}"
                       instance_type = "${instanceType[i]}"
-                      associate_public_ip_address = ${publicIP[i]}
+                      associate_public_ip_address = ${publicIP}
                       subnet_id = "${subnetId[i]}"
                       vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
                       tags = {
@@ -584,7 +569,7 @@ async function createEc2Instance(req, res) {
           let instance = `resource "aws_instance" "${instanceTagName[i]}" {
               ami = "${ami[i]}"
               instance_type = "${instanceType[i]}"
-              associate_public_ip_address = ${publicIP[i]}
+              associate_public_ip_address = ${publicIP}
               subnet_id = "aws_subnet.${subnetTagName[i]}.id"
               vpc_security_group_ids = ["${securityGroupId[i]}"]
               tags = {
@@ -597,7 +582,7 @@ async function createEc2Instance(req, res) {
                   resource "aws_instance" "${instanceTagName[i]}"{
                       ami = "${ami[i]}"
                       instance_type = "${instanceType[i]}"
-                      associate_public_ip_address = ${publicIP[i]}
+                      associate_public_ip_address = ${publicIP}
                       subnet_id = "aws_subnet.${subnetTagName[i]}.id"
                       vpc_security_group_ids = ["aws_security_group.${securityGroupTagName[i]}.id"]
                       tags = {
@@ -610,9 +595,10 @@ async function createEc2Instance(req, res) {
     }
     // console.log("instanceDetail : ",instanceDetail);
     return instanceDetail;
-  } catch (error) {
-    return res.status(400).json({ message: "something went wrong", result: error.message })
-  }
+  // } catch (error) {
+
+  //   return res.status(400).json({ message: "something went wrong", result: error.message })
+  // }
 }
 
 async function loadbancer(req, res) {
