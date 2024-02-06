@@ -2,7 +2,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
 const simpleGit = require('simple-git');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 
 // Get list of AWS services
@@ -54,7 +54,7 @@ async function vpcListGet(req, res, message) {
     }
 }
 
-async function securityGroupListGet(req, res) {
+async function securityGroupListGet(req, res, message) {
     try {
         const tfConfig = `
         data "aws_security_groups" "dys-sg" {
@@ -145,7 +145,7 @@ async function subnetGetList(req, res, message) {
     }
 }
 
-async function osListGet(req, res) {
+async function osListGet(req, res, message) {
     try {
         const os_list = [
             "Amazon Linux 2023 kernel-6.1",
@@ -158,7 +158,7 @@ async function osListGet(req, res) {
             "Windows with SQL server-2022 Standard",
             "Red Had Enterprise Linux 9"
         ]
-        return os_list;
+        respounce.createMessage(req, res, message, os_list);
     } catch (error) {
         return res.status(400).json({ message: "something went wrong ", result: error.message });
     }

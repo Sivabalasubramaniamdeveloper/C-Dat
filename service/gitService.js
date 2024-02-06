@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 async function codePush(req, res, message) {
     try {

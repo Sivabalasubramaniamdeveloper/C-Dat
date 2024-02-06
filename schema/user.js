@@ -1,34 +1,50 @@
-const { database, Sequelize } = require("../connection/postgres");
 
-module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define('User', {
+module.exports = (database, Sequelize) => {
+    const User = database.define('User', {
         uuid: {
-            type: DataTypes.UUID,
+            type: Sequelize.UUID,
             primarykey: true,
-            defaultValue: DataTypes.UUIDV4
+            defaultValue: Sequelize.UUIDV4()
         },
         name: {
-            type: DataTypes.STRING,
+            type: Sequelize.STRING,
             allowNull: false
         },
-        // createdAt: {
-        //     type: DataTypes.DATE,
-        //     defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-        //     allowNull: false
-        // },
-       
-        S3_Url: {
-            type: DataTypes.STRING,
+        password: {
+            type: Sequelize.STRING,
             allowNull: false
         },
-        status: {
-            type: DataTypes.STRING,
+        email: {
+            type: Sequelize.STRING,
             allowNull: false
         },
-        region: {
-            type: DataTypes.STRING,
+        phonenumber: {
+            type: Sequelize.STRING,
             allowNull: false
-        }
+        },
+        role: {
+            type: Sequelize.STRING,
+            allowNull: true,
+            defaultValue: 'user'
+        },
+        is_deleted:{
+            type:Sequelize.BOOLEAN,
+            allowNull:true,
+            defaultValue:false
+        },
+        is_active:{
+            type:Sequelize.BOOLEAN,
+            allowNull:true,
+            defaultValue:true
+        },
+        createdby: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
+        organization_id: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
     }, {
         timeStamps: true
     })
