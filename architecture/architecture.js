@@ -616,58 +616,7 @@ async function createEc2Instance(req, res) {
   }
 }
 
-async function loadbancer(req, res) {
-  try {
-    let targetGroupTagName = req.body.loadbancer.targetGroupTagName
-    let loadbancerTagName = req.body.loadbancer.loadbancerTagName
-    let vpcId = req.body.loadbancer.vpcId
-    let instanceId = req.body.loadbancer.instanceId
-    let subnetId = req.body.loadbancer.subnetId
 
-    if (targetGroupTagName.length > 0) {
-      return res.status(400).json({ message: "only one loadbancer target group name is specified" })
-    }
-    if (vpcId.length == 0) {
-      return res.status(400).json({ message: "Vpc id is required" })
-    }
-    if ((subnetId.length == 0) && (subnetId.length > 2)) {
-      return res.status(400).json({ message: "only two subnet id is specified" });
-    }
-
-    let loadbancer = `
-      resource "aws_lb_target_group" "${targetGroupTagName[0]}" {
-        name     = "${targetGroupTagName[0]}"
-        port     = 80
-        protocol = "HTTP"
-        vpc_id   = "${vpcId[0]}"
-      }
-       
-      // attach instance in load balance
-      resource "aws_lb_target_group_attachment" "test" {
-        target_group_arn = "aws_lb_target_group.${targetGroupTagName[0]}.arn"
-        target_id        = "${instanceId[0]}"
-        port             = 80
-      }
-       
-      //load balance create
-      resource "aws_lb" "${loadbancerTagName[0]}" {
-        name               = "${loadbancerTagName[0]}"
-        internal           = false
-        # load_balancer_type = "network"
-        subnets            = [ "${subnetId[0]}", "${subnetId[1]}"]
-       
-        # enable_deletion_protection = true
-       
-        tags = {
-          Environment = "production"
-        }
-      }
-      `
-    return loadbancer;
-  } catch (error) {
-    return response.status(500).json({ message: "something went wrong", result: error.message })
-  }
-}
 
 
 
@@ -675,6 +624,6 @@ async function loadbancer(req, res) {
 
 module.exports = {
   createVpc, createSubnet, createInternetGateWay, createRouteTable,
-  createSecurityGroup, createEc2Instance, loadbancer
+  createSecurityGroup, createEc2Instance
 };
 

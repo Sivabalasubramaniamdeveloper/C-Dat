@@ -17,13 +17,18 @@ let create_queue = "queue created";
 let snsCreate = "sns Created "
 let codePush = "code push"
 let codePull = "Code pull"
-let rosaCreate = "Rosa create"
+let rosaCreate = "Rosa created"
 let createLoadBalancer = "load balancer created"
 let architecture = "architecture created"
 let mailSend ="Mail Sent"
-let dockerInstance = "Docker instance create"
+let dockerInstance = "Docker instance created"
+let containerDeploy = "Container Deployed "
+let appRunner = "Cloud app runner created "
+let ebs = "EBS Created "
+let code_pipeline = "code pipeline created"
 
 module.exports ={ login, vpc, subnet, route_table, internet_gateway, 
     nat_gateway, security_group, ec2Instance, getVpc, getSubnet, getOs, getSecurityGroup, s3Bucket
   , accountDestroy, serviceDestroy, create_queue, snsCreate, codePush, codePull, rosaCreate, 
-  createLoadBalancer, architecture, mailSend, dockerInstance }
+  createLoadBalancer, architecture, mailSend, dockerInstance, containerDeploy, appRunner, ebs,
+  code_pipeline }

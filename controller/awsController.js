@@ -7,14 +7,64 @@ const architectureService = require('../service/architectureService')
 const destroyService = require('../service/destroyService')
 const rosaService = require('../service/rosaService')
 const dockerService = require("../service/dockerService")
+const jenkinsService = require("../service/jenkinsService")
+const appRunnerService = require('../service/appRunner')
+const ebsService = require('../service/ebsService')
+const codePipelineService = require('../service/codePipelineService')
 // const architecture_func = require('../resource')
 
 // message 
-let message = require('../responce/message')
+let message = require('../response/message') //signUp
 
+async function signUp(req, res ) {
+  try {
+    await userService.signUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function superAdminSignUp(req, res ) {
+  try {
+    await userService.superAdminSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function organizationSignUp(req, res ) {
+  try {
+    await userService.organizationSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function organizationLogin(req, res ) {
+  try {
+    let login_message = message.login
+    await userService.organizationLogin(req, res, login_message)
+  }
+  catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
+
+async function userSignUp(req, res ) {
+  try {
+    await userService.userSignUp(req, res)
+  }
+  catch (error) {
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+}
 
 //AWS LOGIN
-async function aws_login(req, res ) {
+async function userLogin(req, res ) {
   try {
     let login_message = message.login
     await userService.userLogin(req, res, login_message)
@@ -46,6 +96,16 @@ async function subnet_list(req, res) {
 };
 
 async function security_group_list(req, res) {
+  try {
+    let subnet_list_message = message.getSecurityGroup
+    const subnetList = await getService.securityGroupListGet(req, res, subnet_list_message)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: " something went wrong ", result: error.message })
+  }
+};
+
+async function architectureSecurity_group_list(req, res) {
   try {
     let subnet_list_message = message.getSecurityGroup
     const subnetList = await getService.architectureSecurityGroup(req, res, subnet_list_message)
@@ -180,7 +240,7 @@ async function architecture(req, res) {
 async function load_balancer(req, res){
   try {
     let load_massage = message.createLoadBalancer
-    let load_balancer = await architectureService.load_balancer(req, res, message)
+    let load_balancer = await architectureService.loadbancer(req, res, message)
 
   } catch (error) {
     console.log("error is: ", error);
@@ -198,6 +258,16 @@ async function createDockerInstance(req, res) {
   }
 }
 
+async function createContainerDeploy(req, res) {
+  try {
+    let container_deploy = message.containerDeploy
+    let instance = await dockerService.containerDeploy(req, res, container_deploy)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
 async function rosa(req, res) {
   try {
     let rosa_create = message.rosaCreate
@@ -208,9 +278,43 @@ async function rosa(req, res) {
   }
 }
 
+async function jenkinsPipeline(req, res){
+  try {
+    let jenkins_pipeline = message.jenkinsPipeline
+    let jenkins = await jenkinsService.jenkinsData(req, res, jenkins_pipeline)
+  } catch (error) {
+    console.log("error is: ", error);
+    return res.status(400).json({ message: "something went wrong ", result: error.message });
+  }
+}
+
+async function appRunner(req, res){
+    let cloud_appRunner = message.appRunner
+    let runner = await appRunnerService.appRunner(req, res, cloud_appRunner)
+}
+
+async function ebs(req, res){
+  let cloud_ebs= message.ebs
+  let beanstrackService = await ebsService.ebs(req, res, cloud_ebs)
+}
+
+async function code_pipeline(req, res){
+  let cloud_pipeline= message.code_pipeline
+  let codePipeLineService = await codePipelineService.codePipeline(req, res, cloud_pipeline)
+  keyPair
+}
+
+async function key_pair(req, res){
+  let key_pair_message= message.keyPair
+  let keyPairService = await architectureService.keyPair(req, res, key_pair_message)
+}
+
 module.exports = {
-  aws_login, security_group_list, subnet_list, os_list, vpc_list, s3_bucket, accountDestroy,
-  serviceDestroy, create_queue, create_sns_topic, code_pull, push_code, architecture, rosa,
-  load_balancer, send_email, createDockerInstance, internet_gate_way_list
+  organizationSignUp, organizationLogin, userSignUp,userLogin, security_group_list, subnet_list, 
+  os_list, vpc_list, s3_bucket, accountDestroy,serviceDestroy, create_queue, create_sns_topic, 
+  code_pull, push_code, architecture, rosa, load_balancer, send_email, createDockerInstance,
+  createContainerDeploy, internet_gate_way_list, jenkinsPipeline, appRunner, ebs, 
+  code_pipeline, architectureSecurity_group_list,key_pair, superAdminSignUp, signUp
+  
   // jenkin,
 };

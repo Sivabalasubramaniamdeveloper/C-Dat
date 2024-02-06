@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('../path');
-const respounce = require('../responce/responce')
+const respounce = require('../response/response')
 
 async function accountDestroy(req, res, message) {
     try {
@@ -31,7 +31,7 @@ async function accountDestroy(req, res, message) {
 async function serviceDestroy(req, res, message) {
     try {
         let service = req.body.service;
-        let deleteFileName = req.body.deleteFileName;
+        let deleteFileName = req.body.tagName;
         const configPath = `${path.directory}`; // Path to the directory containing your Terraform configuration file
 
         if (!fs.existsSync(configPath)) {
