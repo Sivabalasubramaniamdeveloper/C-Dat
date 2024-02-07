@@ -4,11 +4,11 @@ const router=require("express").Router();
 
 // finish router
 router.post("/signup", awsController.signUp);
+router.post("/login",  awsController.userLogin);
 router.post("/superAdmin_signup", middleware.authorization, middleware.authentication(['admin'],true), awsController.superAdminSignUp);
-router.post("/organization_signup", middleware.authorization, middleware.authentication(['admin'],true), awsController.organizationSignUp);
+router.post("/organization_signup", middleware.authorization, middleware.authentication(['superAdmin'],true), awsController.organizationSignUp);
 router.post("/organization_login", middleware.authorization, middleware.authentication(['admin'],true), awsController.organizationLogin);
 router.post("/user_signup", middleware.authorization, middleware.authentication(['admin'],true), awsController.userSignUp);
-router.post("/user_login", middleware.authorization, middleware.authentication(['admin'],true), awsController.userLogin);
 router.post("/s3_bucket", middleware.authorization, middleware.authentication(['admin'],true),awsController.s3_bucket)
 router.get("/vpclist", middleware.authorization, middleware.authentication(['admin'],true),awsController.vpc_list);
 router.get("/SG_list", middleware.authorization, middleware.authentication(['admin'],true),awsController.security_group_list)

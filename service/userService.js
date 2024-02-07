@@ -55,11 +55,11 @@ async function superAdminSignUp(req, res, message) {
   try {
     // console.log(1);
     let register = {}
-    let name = "thayalan"
-    let password = "Theena"
-    let email = "theena10@gmail.com"
-    let phonenumber = "+916383050963"
-    let role = 'superAdmin'
+    let name = req.body.name
+    let password = req.body.password
+    let email = req.body.email
+    let phonenumber = req.body.phonenumber
+    let role = req.body.role
     register.name = name
     register.password = password
     register.email = email
@@ -71,8 +71,8 @@ async function superAdminSignUp(req, res, message) {
     if (data) {
       return res.status(400).json({ message: "already phone number registered" })
     } else {
-      // let organizationRegister = await organization.create(register)
-      return res.status(201).json({ message: "organization register successfully" })
+      let organizationRegister = await user.create(register)
+      return res.status(201).json({ message: "super admin register successfully" })
     }
 
   } catch (error) {
@@ -84,7 +84,7 @@ async function organizationSignUp(req, res, message) {
   try {
     // console.log(1);
     let register = {}
-    let name = req.body.user_name
+    let name = req.body.name
     let password = req.body.password
     let email = req.body.email
     let phonenumber = req.body.phonenumber
@@ -95,16 +95,9 @@ async function organizationSignUp(req, res, message) {
     register.phonenumber = phonenumber
     register.createdby = req.id
 
-
-    let data = await user.findOne({
-      where: { phonenumber: phonenumber }
-    })
-    if (data) {
-      return res.status(400).json({ message: "already phone number registered" })
-    } else {
       let organizationRegister = await organization.create(register)
       return res.status(201).json({ message: "organization register successfully" })
-    }
+    
 
   } catch (error) {
     return res.status(400).json({ message: " something went wrong ", result: error.message })
@@ -207,7 +200,9 @@ async function userLogin(req, res, message) {
           role: data.role,
           organization_id: data.organization_id
         }
-        const token = jwt.sign(user, jwtSecretKey);
+        const token = jwt.sign(user, jwtSecretKey, {
+          expiresIn: '365d' // expires in 365 days
+     });
         return res.status(201).json({ message: "log in successfully", result: token })
       } else {
         return res.status(400).json({ message: "user phone number and password incorrect" })
