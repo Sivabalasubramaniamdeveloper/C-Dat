@@ -3,23 +3,24 @@
 const jwt = require('jsonwebtoken');
 
 function authorization(req, res, next) {
-    let token = jwt.sign({
-        data: '1',
-        role: 'admin'
-    }, 'secrets_value', { expiresIn: 60 * 60 });
+    let auth = req.headers.authorization
+    let token = auth.split(' ')
 
+    let jwtSecretKey = process.env.JWT_SECRET_KEY;
     try {
-        let verify = jwt.verify(token, 'secrets_value');
+        let verify = jwt.verify(token[1], jwtSecretKey);
+
         if (verify) {
             req.role = verify.role;
+            req.id = verify.uuid;
             next();
         } else {
             return res.status(400).json({ message: "user not found" });
         }
 
     } catch (error) {
-        console.error("Error verifying token:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error verifying token:", error.message );
+        res.status(400).json({ error: "something went wrong", result : error.message });
     }
 }
 
